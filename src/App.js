@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-no-bind */
 import React from "react";
 
 import "./app.styles.scss";
@@ -26,14 +27,19 @@ const useStyles = makeStyles({
 });
 
 function App(props) {
-  const [age, setAge] = React.useState(20);
   const classes = useStyles();
 
+  const [exercise, setExercise] = React.useState(1);
+  const [message, setMessage] = React.useState("");
+  const [encryptedMessage, setEncryptedMessage] = React.useState("");
+
   const handleInputChange = (event) => {
-    console.log(event.target.value);
+    setMessage(event.target.value);
+    const changedMessage = messageToChange + messageToChange;
+    setEncryptedMessage(changedMessage);
   };
   const handleSelectChange = (event) => {
-    setAge(event.target.value);
+    setExercise(event.target.value);
   };
 
   return (
@@ -52,18 +58,19 @@ function App(props) {
           <Select
             labelId="demo-simple-select-label"
             id="demo-simple-select"
-            value={age}
+            value={exercise}
             onChange={handleSelectChange}
           >
-            <MenuItem value={10}>Ten</MenuItem>
-            <MenuItem value={20}>Twenty</MenuItem>
-            <MenuItem value={30}>Thirty</MenuItem>
+            <MenuItem value={1}>Zadanie 1</MenuItem>
+            <MenuItem value={2}>Zadanie 2</MenuItem>
+            <MenuItem value={3}>Zadanie 3</MenuItem>
           </Select>
         </Grid>
         <Grid item>
           {" "}
           <TextareaAutosize
             aria-label="message"
+            value={message}
             rowsMin={8}
             placeholder="wpisz swoją wiadomość"
             className={classes.textArea}
@@ -72,7 +79,8 @@ function App(props) {
           <TextareaAutosize
             aria-label="encryptedMessage"
             rowsMin={8}
-            placeholder="wersja zaszyfrowana"
+            value={encryptedMessage}
+            placeholder="zaszyfrowana wiadomość"
             className={classes.textArea}
           />
         </Grid>
