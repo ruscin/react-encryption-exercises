@@ -1,87 +1,76 @@
-## Minimal React and Webpack 4 boilerplate with babel 
+# webpack5-react-boilerplate
 
-<p align="center">
-    <img alt="dependencies" title="dependencies" src="https://img.shields.io/david/hashemkhalifa/webpack-react-boilerplate.svg" >
-   <img alt="dependencies" title="dependencies" src="https://img.shields.io/github/last-commit/hashemkhalifa/webpack-react-boilerplate.svg" >
-</p>
+Webpack 5  boilerplate for react using babel, sass, with a hot dev server and an optimized production build.Configured with eslint rules.
 
-> Minimal webpack and react boilerplate using latest version of react and babel as well as jest and enzyme for more details about technologies used. [click](#technologies-used) 
-> with real time server changes ;)
+## Installation
 
-> check out  [Medium article](https://medium.com/@hashem.khalifa/minimal-webpack-and-react-starter-boilerplate-seriously-d90a673e134f) for more details 
+```
+git clone https://github.com/miami78/webpack5-react-boilerplate.git
+cd webpack5-react-boilerplate
+yarn / npm i
+```
 
+## Usage
 
+### Development server
 
-![Real time change](https://cdn-images-1.medium.com/max/1600/1*0Slpwk3trmF7kLeoFp5UOw.gif)
+```bash
+yarn start / npm start
+```
 
-### Table of contents
-[Project structure](#project-structure)
+You can view the development server at `localhost:8080`.
 
-[Installation](#installation)
+### Production build
 
-[Configuration](#configuration)
+```bash
+ yarn build / npm run build
+```
 
-[Technologies used](#technologies-used)
+## Features
 
-### Project structure
+- [webpack](https://webpack.js.org/)
+- [Babel](https://babeljs.io/)
+- [Sass](https://sass-lang.com/)
+- [Eslint](https://eslint.org/)
 
-````
-build/
-src/
-|- index.jsx _______________________________ # Application entry 
-|- App.jsx _________________________________ # Application init
-|  |- Components/
-|    |- hello-world/ 
-|       |- index.jsx _______________________ # Sample component
+## Dependencies
 
-webpack
-|- paths.js ________________________________ # webpack paths needed
-|- webpack.common.js _______________________ # common webpack config
-|- webpack.dev.js __________________________ # development config
-|- webpack.prod.js _________________________ # production config      
-````
+### webpack
 
+- [`webpack`](https://github.com/webpack/webpack) - Module and asset bundler.
+- [`webpack-cli`](https://github.com/webpack/webpack-cli) - Command line interface for webpack
+- [`webpack-dev-server`](https://github.com/webpack/webpack-dev-server) - Development server for webpack
+- [`webpack-merge`](https://github.com/survivejs/webpack-merge) - Simplify development/production configuration
+- [`cross-env`](https://github.com/kentcdodds/cross-env) - Cross platform configuration
 
-### Installation
+### Babel
 
-1- Clone the boilerplate repo
+- [`@babel/core`](https://www.npmjs.com/package/@babel/core) - Transpile ES6+ to backwards compatible JavaScript
+- [`@babel/plugin-proposal-class-properties`](https://babeljs.io/docs/en/babel-plugin-proposal-class-properties) - Use properties directly on a class (an example Babel config)
+- [`@babel/preset-env`](https://babeljs.io/docs/en/babel-preset-env) - Smart defaults for Babel
 
-`git clone git@github.com:HashemKhalifa/webpack-react-boilerplate.git`
+### Loaders
 
-2- `yarn` or `npm install` to install npm packages
+- [`babel-loader`](https://webpack.js.org/loaders/babel-loader/) - Transpile files with Babel and webpack
+- [`sass-loader`](https://webpack.js.org/loaders/sass-loader/) - Load SCSS and compile to CSS
+  - [`node-sass`](https://github.com/sass/node-sass) - Node Sass
+- [`css-loader`](https://webpack.js.org/loaders/css-loader/) - Resolve CSS imports
+- [`style-loader`](https://webpack.js.org/loaders/style-loader/) - Inject CSS into the DOM
 
-3- start dev server using `yarn start` or `npm start`.
-
-3- build and bundling your resources for production `yarn build`.
-
-4- Unit testing will watch all your changes in the test files as well as create coverage folder for you. 
-`yarn test`
-
-
-### Configuration
-* Webpack Config paths based on your file structure you can go to `webpack/paths.js` and modify the source and file names based on your need.
-* `webpack/webpack.common.js` config common webpack for both dev and production environments.
-* webpack/webpack.dev.js config webpack for dev environment.
-* `webpack/webpack.prod.js` config webpack for production environment.
-* `/webpack.config.js` main webpack config that merge common and webpack environment based config.
-* Enzyme config `/setupTest.js` here you will have all setup for enzyme to test your component.
-* Prettier config `/.prettierc`.
-* Browsers list config `/.browserslistrc`.
+### Eslint
+- [`eslint-config-prettier`](https://www.npmjs.com/package/eslint-config-prettier) - Turns off all rules that are unnecessary or might conflict with Prettier.
+- [`eslint-import-resolver-alias`](https://www.npmjs.com/package/eslint-import-resolver-alias) - a simple Node behavior import resolution plugin for eslint-plugin-import, supporting module alias.
+- [`eslint-plugin-babel`](https://www.npmjs.com/package/eslint-plugin-babel) - an eslint rule plugin companion to babel-eslint.
+- [`eslint-plugin-import`](https://www.npmjs.com/package/eslint-plugin-import) - This plugin intends to support linting of ES2015+ (ES6+) import/export syntax, and prevent issues with misspelling of file paths and import names.
+- [`eslint-plugin-prettier`](https://www.npmjs.com/package/eslint-plugin-prettier) - Runs prettier as an eslint rule.
+- [`eslint-plugin-react`](https://www.npmjs.com/package/eslint-plugin-react) - React specific linting rules for ESLint.
 
 
-#### Technologies used
+### Plugins
 
-
-* [Webpack 4](https://github.com/webpack/webpack) 
-* [Babel 7](https://github.com/babel/babel) [ transforming JSX and ES6,ES7,ES8 ]
-* [React](https://github.com/facebook/react) `16.8`
-* [Lodash](https://github.com/lodash/lodash)
-* [Jest](https://github.com/facebook/jest) [ Unit test]
-* [Enzyme](http://airbnb.io/enzyme/) for UI testing.
-* [Eslint](https://github.com/eslint/eslint/) with airbnb config
-* [Prettier](https://github.com/prettier/prettier) [ Code formatter ]
-* [Style](https://github.com/webpack-contrib/style-loader) & [CSS Loader](https://github.com/webpack-contrib/css-loader) & [SASS-loader](https://github.com/webpack-contrib/sass-loader)
-* [CSS modules](https://github.com/css-modules/css-modules) [ Isolated style based on each component ]
-* [Browsers list](https://github.com/browserslist/browserslist) [ Share target browsers between different front-end tools, like Autoprefixer, Stylelint and babel-preset-env ]
-* [React hot loader](https://github.com/gaearon/react-hot-loader)
-* [Webpack dev serve](https://github.com/webpack/webpack-dev-server) 
+- [`clean-webpack-plugin`](https://github.com/johnagan/clean-webpack-plugin) - Remove/clean build folders
+- [`copy-webpack-plugin`](https://github.com/webpack-contrib/copy-webpack-plugin) - Copy files to build directory
+- [`html-webpack-plugin`](https://github.com/jantimon/html-webpack-plugin) - Generate HTML files from template
+- [`mini-css-extract-plugin`](https://github.com/webpack-contrib/mini-css-extract-plugin) - Extract CSS into separate files
+- [`optimize-css-assets-webpack-plugin`](https://github.com/NMFR/optimize-css-assets-webpack-plugin) - Optimize and minimize CSS assets
+- [`terser-webpack-plugin`](https://github.com/webpack-contrib/terser-webpack-plugin) - Optimize and minimize JavaScript
