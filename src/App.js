@@ -3,7 +3,7 @@
 
 import React from "react";
 
-import AES, { decrypt } from "crypto-js/aes";
+import AES from "crypto-js/aes";
 import CFBmode from "crypto-js/mode-cfb";
 import CTRmode from "crypto-js/mode-ctr";
 import ECBmode from "crypto-js/mode-ecb";
@@ -26,10 +26,9 @@ const CFB = "CFB";
 const CTR = "CTR";
 const CBC = "CBC";
 const OFB = "OFB";
-const MY_MODE = "myCBC";
 const FONT_INPUT = "fontInput";
 
-const allModes = [CBC, ECB, OFB, CFB, CTR, MY_MODE];
+const allModes = [CBC, ECB, OFB, CFB, CTR];
 
 const statsMap = allModes.reduce((acc, el) => {
   acc[el] = {
@@ -92,15 +91,14 @@ const myCBCModeEncryption = (text) => {
 };
 
 const myCBCModeDecryption = (text) => {
-  const toDecrypt = AES.decrypt(text, KEY);
-
-  console.log("xd", toDecrypt);
+  const toDecrypt = hexToAscii(AES.decrypt(text, KEY));
 
   return toDecrypt;
 };
 
-console.log(myCBCModeEncryption("kotek").toString())
-console.log(myCBCModeDecryption("U2FsdGVkX1++ubZnGIjrBAhQTpLaSz/YSVIKFgkc1jc="))
+console.log(
+  myCBCModeDecryption("U2FsdGVkX19UoyufbcL308ma69rMsO7ot9sPxyoP4UE=")
+);
 
 const getMode = (mode) => {
   switch (mode) {
@@ -150,26 +148,19 @@ function App(props) {
 
   const changeTexts = (text) => {
     let t0 = performance.now();
-    let encryptedMessage, decryptedMessage;
 
-    if (blockMode !== MY_MODE) {
-      // TODO: change it it looks awful
-      encryptedMessage = AES.encrypt(
-        text,
+    const encryptedMessage = AES.encrypt(
+      text,
+      KEY,
+      blockMode === CBC ? {} : { mode: getMode(blockMode) }
+    );
+    const decryptedMessage = hexToAscii(
+      AES.decrypt(
+        encryptedMessage,
         KEY,
         blockMode === CBC ? {} : { mode: getMode(blockMode) }
-      );
-      decryptedMessage = hexToAscii(
-        AES.decrypt(
-          encryptedMessage,
-          KEY,
-          blockMode === CBC ? {} : { mode: getMode(blockMode) }
-        )
-      );
-    } else {
-      encryptedMessage = myCBCModeEncryption(text);
-      decryptedMessage = myCBCModeDecryption(encryptedMessage);
-    }
+      )
+    );
 
     let t1 = performance.now();
     const passedTime = t1 - t0;
@@ -244,7 +235,6 @@ function App(props) {
             <MenuItem value={OFB}>OFB</MenuItem>
             <MenuItem value={CFB}>CFB</MenuItem>
             <MenuItem value={CTR}>CTR</MenuItem>
-            <MenuItem value={MY_MODE}>MY_MODE</MenuItem>
           </Select>
           <span> </span>
           <Input
