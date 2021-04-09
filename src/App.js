@@ -3,32 +3,63 @@
 
 import React from "react";
 
-import AES from "crypto-js/aes";
+import AES, { decrypt } from "crypto-js/aes";
 import CFBmode from "crypto-js/mode-cfb";
 import CTRmode from "crypto-js/mode-ctr";
 import ECBmode from "crypto-js/mode-ecb";
 import OFBmode from "crypto-js/mode-ofb";
+import enc from "crypto-js/enc-hex";
 
-import {
-  Input,
-  MenuItem,
-  Grid,
-  Select,
-  TextareaAutosize,
-  Button,
-} from "@material-ui/core";
+import { Input, MenuItem, Grid, Select, Button } from "@material-ui/core";
 
 import "./app.styles.scss";
 import { makeStyles } from "@material-ui/core/styles";
 
 import { TextArea } from "./components/TextArea";
+import { MyTable } from "./components/MyTable";
+
+const KEY = "1234567890123456";
+const IV = enc.parse("101112131415161718191a1b1c1d1e1f");
 
 const ECB = "ECB";
 const CFB = "CFB";
 const CTR = "CTR";
 const CBC = "CBC";
 const OFB = "OFB";
+const MY_MODE = "myCBC";
 const FONT_INPUT = "fontInput";
+
+const allModes = [CBC, ECB, OFB, CFB, CTR, MY_MODE];
+
+const statsMap = allModes.reduce((acc, el) => {
+  acc[el] = {
+    elements: [],
+    avg: null, //TODO: refactor this nulls, they are so bad
+    min: null,
+    max: null,
+  };
+  return acc;
+}, {});
+
+function createData(name, averageTime, min, max) {
+  return { name, averageTime, min, max };
+}
+
+const createRows = (aaa) => {
+  return Object.entries(aaa).map(([name, stat]) =>
+    createData(name, stat.avg, stat.min, stat.max)
+  );
+};
+
+const hexToAscii = (string) => {
+  const hex = string.toString();
+  let decodedString = "";
+  for (let i = 0; i < hex.length; i += 2) {
+    decodedString += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
+  }
+
+  return decodedString;
+};
 
 const useStyles = makeStyles({
   root: {
@@ -46,17 +77,30 @@ const useStyles = makeStyles({
   input: {
     width: "50px",
   },
+  table: {
+    backgroundColor: "#D9D9D9",
+  },
 });
 
-const hexToAscii = (string) => {
-  const hex = string.toString();
-  let decodedString = "";
-  for (let i = 0; i < hex.length; i += 2) {
-    decodedString += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
-  }
+const myCBCModeEncryption = (text) => {
+  const toEncrypt = text ^ IV;
+  const encryptedMessage = AES.encrypt(toEncrypt, KEY, {
+    mode: ECBmode,
+  });
 
-  return decodedString;
+  return encryptedMessage;
 };
+
+const myCBCModeDecryption = (text) => {
+  const toDecrypt = AES.decrypt(text, KEY);
+
+  console.log("xd", toDecrypt);
+
+  return toDecrypt;
+};
+
+console.log(myCBCModeEncryption("kotek").toString())
+console.log(myCBCModeDecryption("U2FsdGVkX1++ubZnGIjrBAhQTpLaSz/YSVIKFgkc1jc="))
 
 const getMode = (mode) => {
   switch (mode) {
@@ -82,24 +126,57 @@ function App(props) {
   const [decryptedMessage, setDecryptedMessage] = React.useState("");
   const [timeToEncrypt, setTimeToEncrypt] = React.useState(0);
   const [fontSize, setFontSize] = React.useState(12);
+  const [rows, setRows] = React.useState(createRows(statsMap));
+
+  const setStatsMap = (passedTime) => {
+    statsMap[blockMode].elements.push(passedTime);
+
+    const sum = statsMap[blockMode].elements.reduce((a, b) => a + b, 0);
+
+    statsMap[blockMode].avg = sum / statsMap[blockMode].elements.length;
+    if (
+      statsMap[blockMode].min === null ||
+      statsMap[blockMode].min > passedTime
+    ) {
+      statsMap[blockMode].min = passedTime;
+    }
+    if (
+      statsMap[blockMode].max === null ||
+      statsMap[blockMode].max < passedTime
+    ) {
+      statsMap[blockMode].max = passedTime;
+    }
+  };
 
   const changeTexts = (text) => {
-    const key = "1234567890123456";
     let t0 = performance.now();
-    const encryptedMessage = AES.encrypt(
-      text,
-      key,
-      blockMode === CBC ? {} : { mode: getMode(blockMode) }
-    );
-    const decryptedMessage = hexToAscii(
-      AES.decrypt(
-        encryptedMessage,
-        key,
+    let encryptedMessage, decryptedMessage;
+
+    if (blockMode !== MY_MODE) {
+      // TODO: change it it looks awful
+      encryptedMessage = AES.encrypt(
+        text,
+        KEY,
         blockMode === CBC ? {} : { mode: getMode(blockMode) }
-      )
-    );
+      );
+      decryptedMessage = hexToAscii(
+        AES.decrypt(
+          encryptedMessage,
+          KEY,
+          blockMode === CBC ? {} : { mode: getMode(blockMode) }
+        )
+      );
+    } else {
+      encryptedMessage = myCBCModeEncryption(text);
+      decryptedMessage = myCBCModeDecryption(encryptedMessage);
+    }
+
     let t1 = performance.now();
-    setTimeToEncrypt(t1 - t0);
+    const passedTime = t1 - t0;
+
+    setStatsMap(passedTime);
+    setTimeToEncrypt(passedTime);
+    setRows(createRows(statsMap));
     setMessage(text);
     setEncryptedMessage(encryptedMessage.toString());
     setDecryptedMessage(decryptedMessage);
@@ -124,6 +201,24 @@ function App(props) {
   const handleClick = () => {
     changeTexts(message);
   };
+  const generateTen = () => {
+    for (let i = 0; i < 10; i++) {
+      changeTexts(message);
+    }
+  };
+  const resetStatsMap = () => {
+    allModes.forEach((mode) => {
+      statsMap[mode] = {
+        elements: [],
+        avg: null, //TODO: refactor this nulls, they are so bad
+        min: null,
+        max: null,
+      };
+    });
+    setRows(createRows(statsMap));
+  };
+
+  //TODO: make more components, it looks so bad
 
   return (
     <div>
@@ -139,8 +234,8 @@ function App(props) {
         </Grid>
         <Grid item>
           <Select
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
+            labelId="selectModeLabel"
+            id="selectMode"
             value={blockMode}
             onChange={handleSelectChange}
           >
@@ -149,6 +244,7 @@ function App(props) {
             <MenuItem value={OFB}>OFB</MenuItem>
             <MenuItem value={CFB}>CFB</MenuItem>
             <MenuItem value={CTR}>CTR</MenuItem>
+            <MenuItem value={MY_MODE}>MY_MODE</MenuItem>
           </Select>
           <span> </span>
           <Input
@@ -197,6 +293,31 @@ function App(props) {
           >
             przelicz
           </Button>
+          <span> </span>
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={generateTen}
+            style={{
+              marginTop: "20px",
+            }}
+          >
+            generuj 10
+          </Button>
+          <span> </span>
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={resetStatsMap}
+            style={{
+              marginTop: "20px",
+            }}
+          >
+            wyzeruj Tabele
+          </Button>
+        </Grid>
+        <Grid style={{ margin: "20px" }}>
+          <MyTable name={classes.table} rows={rows}></MyTable>
         </Grid>
       </Grid>
     </div>
