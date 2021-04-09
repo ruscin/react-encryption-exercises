@@ -85,7 +85,7 @@ function App(props) {
 
   const changeTexts = (text) => {
     const key = "1234567890123456";
-
+    let t0 = performance.now();
     const encryptedMessage = AES.encrypt(
       text,
       key,
@@ -98,17 +98,11 @@ function App(props) {
         blockMode === CBC ? {} : { mode: getMode(blockMode) }
       )
     );
-
+    let t1 = performance.now();
+    setTimeToEncrypt(t1 - t0);
     setMessage(text);
     setEncryptedMessage(encryptedMessage.toString());
     setDecryptedMessage(decryptedMessage);
-  };
-
-  const countTime = (receivedText) => {
-    let t0 = performance.now();
-    changeTexts(receivedText);
-    let t1 = performance.now();
-    setTimeToEncrypt(t1 - t0);
   };
 
   const handleInputChange = (event) => {
@@ -119,16 +113,16 @@ function App(props) {
         break;
 
       default:
-        countTime(receivedText);
+        changeTexts(receivedText);
         break;
     }
   };
   const handleSelectChange = (event) => {
     setBlockMode(event.target.value);
-    countTime(message);
+    changeTexts(message);
   };
   const handleClick = () => {
-    countTime(message);
+    changeTexts(message);
   };
 
   return (
@@ -166,7 +160,6 @@ function App(props) {
         </Grid>
         <Grid item>
           {" "}
-          {/* TODO: wydzielić component */}
           <TextArea
             text={message}
             placeholderMessage="wpisz swoją wiadomość"
