@@ -21,6 +21,8 @@ import {
 import "./app.styles.scss";
 import { makeStyles } from "@material-ui/core/styles";
 
+import { TextArea } from "./components/TextArea";
+
 const ECB = "ECB";
 const CFB = "CFB";
 const CTR = "CTR";
@@ -97,14 +99,6 @@ function App(props) {
       )
     );
 
-    console.log(
-      AES.decrypt(
-        encryptedMessage,
-        key,
-        blockMode === CBC ? {} : { mode: getMode(blockMode) }
-      )
-    );
-
     setMessage(text);
     setEncryptedMessage(encryptedMessage.toString());
     setDecryptedMessage(decryptedMessage);
@@ -173,42 +167,27 @@ function App(props) {
         <Grid item>
           {" "}
           {/* TODO: wydzielić component */}
-          <TextareaAutosize
-            aria-label="message"
-            value={message}
-            rowsMin={8}
-            rowsMax={30}
-            placeholder="wpisz swoją wiadomość"
+          <TextArea
+            text={message}
+            placeholderMessage="wpisz swoją wiadomość"
             className={classes.textArea}
             id={"firstInput"}
-            onChange={handleInputChange}
-            style={{
-              fontSize: fontSize,
-            }}
+            handleInputChange={handleInputChange}
+            fontSize={fontSize}
           />
-          <TextareaAutosize
-            aria-label="encryptedMessage"
-            rowsMin={8}
-            rowsMax={30}
-            value={encryptedMessage}
-            placeholder="zaszyfrowana wiadomość"
+          <TextArea
+            text={encryptedMessage}
+            placeholderMessage="zaszyfrowana wiadomość"
             id={"secondInput"}
             className={classes.textArea}
-            style={{
-              fontSize: fontSize,
-            }}
+            fontSize={fontSize}
           />
-          <TextareaAutosize
-            aria-label="encryptedMessage"
-            rowsMin={8}
-            rowsMax={30}
-            value={decryptedMessage}
-            placeholder="odszyfrowana wiadomość"
+          <TextArea
+            text={decryptedMessage}
+            placeholderMessage="odszyfrowana wiadomość"
             id={"thirdInput"}
             className={classes.textArea}
-            style={{
-              fontSize: fontSize,
-            }}
+            fontSize={fontSize}
           />
         </Grid>
         <Grid>
