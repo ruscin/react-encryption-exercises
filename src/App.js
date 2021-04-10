@@ -18,6 +18,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import { TextArea } from "./components/TextArea";
 import { MyTable } from "./components/MyTable";
 
+const XOR = require("xor-crypt");
+
 const KEY = "1234567890123456";
 const IV = enc.parse("101112131415161718191a1b1c1d1e1f");
 
@@ -83,7 +85,8 @@ const useStyles = makeStyles({
 });
 
 const myCBCModeEncryption = (text) => {
-  const toEncrypt = text ^ IV;
+  const toEncrypt = XOR(text, IV);
+
   const encryptedMessage = AES.encrypt(toEncrypt, KEY, {
     mode: ECBmode,
   });
@@ -92,16 +95,16 @@ const myCBCModeEncryption = (text) => {
 };
 
 const myCBCModeDecryption = (text) => {
-  const toDecrypt = AES.decrypt(text, KEY);
+  const toDecrypt = hexToAscii(
+    AES.decrypt(text, KEY, { mode: ECBmode }).toString()
+  );
 
-  console.log("xd", toDecrypt);
+  const decryptedMessage = XOR(toDecrypt, IV);
 
-  return toDecrypt;
+  return decryptedMessage;
 };
 
-console.log(myCBCModeEncryption("kotek").toString())
-console.log(myCBCModeDecryption("U2FsdGVkX1++ubZnGIjrBAhQTpLaSz/YSVIKFgkc1jc="))
-
+console.log(myCBCModeEncryption("kotek"));
 const getMode = (mode) => {
   switch (mode) {
     case ECB:
@@ -254,31 +257,36 @@ function App(props) {
             onChange={handleInputChange}
           ></Input>
         </Grid>
-        <Grid item>
-          {" "}
-          <TextArea
-            text={message}
-            placeholderMessage="wpisz swoją wiadomość"
-            className={classes.textArea}
-            id={"firstInput"}
-            handleInputChange={handleInputChange}
-            fontSize={fontSize}
-          />
-          <TextArea
-            text={encryptedMessage}
-            placeholderMessage="zaszyfrowana wiadomość"
-            id={"secondInput"}
-            className={classes.textArea}
-            fontSize={fontSize}
-          />
-          <TextArea
-            text={decryptedMessage}
-            placeholderMessage="odszyfrowana wiadomość"
-            id={"thirdInput"}
-            className={classes.textArea}
-            fontSize={fontSize}
-          />
-        </Grid>
+
+        {fontSize === 0 ? (
+          <div></div>
+        ) : (
+          <Grid item>
+            <TextArea
+              text={message}
+              placeholderMessage="wpisz swoją wiadomość"
+              className={classes.textArea}
+              id={"firstInput"}
+              handleInputChange={handleInputChange}
+              fontSize={fontSize}
+            />
+            <TextArea
+              text={encryptedMessage}
+              placeholderMessage="zaszyfrowana wiadomość"
+              id={"secondInput"}
+              className={classes.textArea}
+              fontSize={fontSize}
+            />
+            <TextArea
+              text={decryptedMessage}
+              placeholderMessage="odszyfrowana wiadomość"
+              id={"thirdInput"}
+              className={classes.textArea}
+              fontSize={fontSize}
+            />
+          </Grid>
+        )}
+
         <Grid>
           <div>czas wykonania w ms: {timeToEncrypt} </div>
         </Grid>

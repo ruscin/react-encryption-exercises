@@ -48,7 +48,8 @@
     "@material-ui/core": "^4.11.3",
     "crypto-js": "^4.0.0",
     "react": "^16.14.0",
-    "react-dom": "^16.14.0"
+    "react-dom": "^16.14.0",
+    "xor-crypt": "^1.1.1"
   },
   "browser": {
     "crypto": false
